@@ -95,41 +95,35 @@ class classController {
     }
 
     unselectedClassesClickListener() {
-    this.view.unselectedClasses.addEventListener('click', (event) => {
-
-        
-    const target = event.target.closest('.unselected__classes--class');
-    console.log(target);
-    if (!target) return;
-    const courseId = target.getAttribute('course-id');
-    console.log(courseId);
-    const course = this.model.getCourse(Number(courseId));
-    console.log(this.model.classes)
-    console.log(course);
-    
-
-    if (course && this.model.credit + course.credit <= 18) {
-      const isToggled = target.getAttribute('toggled') === 'true';
-      target.setAttribute('toggled', !isToggled);
-      target.style.backgroundColor = isToggled ? '' : 'aquamarine';
-
-      if (isToggled) {
-        this.model.deleteClass(course);
-        this.view.updateTotalCredits(this.model.getCredit());
-        console.log(this.model.credit)
-        console.log(this.model.selectedClasses)
-      } else {
-        this.model.addClass(course);
-        this.view.updateTotalCredits(this.model.getCredit())
-        console.log(this.model.credit)
-        console.log(this.model.selectedClasses)
+        this.view.unselectedClasses.addEventListener('click', (event) => {
+          const target = event.target.closest('.unselected__classes--class');
+          if (!target) return;
+          const courseId = target.getAttribute('course-id');
+          const course = this.model.getCourse(Number(courseId));
+          
+          if (course && this.model.credit + course.credit <= 18) {
+            const isToggled = target.getAttribute('toggled') === 'true';
+            target.setAttribute('toggled', !isToggled);
+            target.style.backgroundColor = isToggled ? '' : 'aquamarine';
+      
+            if (isToggled) {
+              this.model.deleteClass(course);
+              this.view.updateTotalCredits(this.model.getCredit());
+            } else {
+              this.model.addClass(course);
+              this.view.updateTotalCredits(this.model.getCredit());
+            }
+          } else if (this.model.selectedClasses.includes(course)) {
+            this.model.deleteClass(course);
+            target.setAttribute('toggled', 'false');
+            target.style.backgroundColor = '';
+            this.view.updateTotalCredits(this.model.getCredit());
+          } else {
+            alert("You have exceeded the maximum credit limit of 18");
+          } 
+        });
       }
-    }else{
-        alert("You have exceeded the maximum credit limit of 18")
-        return
-    } 
-  });
-}
+      
 
       selectButtonClickListener() {
         this.view.selectButton.addEventListener('click', () => {
