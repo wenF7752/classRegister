@@ -20,7 +20,7 @@ class classModel {
       }
 
     deleteClass(course) {
-        this.selectedClasses = this.selectedClasses.filter(c => c.courseID !== course.courseID);
+        this.selectedClasses = this.selectedClasses.filter(c => c.courseId !== course.coursId);
         this.credit -= course.credit;
     }
 
@@ -28,6 +28,9 @@ class classModel {
         return this.credit;
 
     }
+    getCourse(courseId) {  
+        return this.classes.find(c => c.courseId === courseId);
+      }
 
 }
 
@@ -45,7 +48,7 @@ class classView {
 
     displayUnselectedClasses(classes) {
         this.unselectedClasses.innerHTML = classes.map(
-            course => `<div class="unselected__classes--class" toggled="false" course-name="${course.courseName}" course-type="${course.required}" data-course-credit="${course.credit}"  data-course-id="${course.courseID}" >
+            course => `<div class="unselected__classes--class" toggled="false" course-name="${course.courseName}" course-type="${course.required}" course-credit="${course.credit}"  course-id="${course.courseId}" >
             <p>${course.courseName}</p>
             <p>Course Type: ${course.required ? 'Compulsory' : 'Elective'}</p>
             <p>Course Credit: ${course.credit}</p>
@@ -92,14 +95,18 @@ class classController {
     }
 
     unselectedClassesClickListener() {
-  this.view.unselectedClasses.addEventListener('click', (event) => {
+    this.view.unselectedClasses.addEventListener('click', (event) => {
+
+        
     const target = event.target.closest('.unselected__classes--class');
+    console.log(target);
     if (!target) return;
-
-    
-
     const courseId = target.getAttribute('course-id');
-    const course = this.model.classes.find(cls => cls.courseID == courseId);
+    console.log(courseId);
+    const course = this.model.getCourse(Number(courseId));
+    console.log(this.model.classes)
+    console.log(course);
+    
 
     if (course && this.model.credit + course.credit <= 18) {
       const isToggled = target.getAttribute('toggled') === 'true';
