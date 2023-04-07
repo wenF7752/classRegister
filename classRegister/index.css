@@ -1,0 +1,115 @@
+*,
+*::before,
+*::after{
+    margin:0;
+    padding:0;
+    box-sizing: inherit
+}
+
+html{
+    font-size: 62.25%;
+}
+
+body{
+    font-size: 1.2rem;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    
+}
+
+.container{
+
+    display: flex;
+    justify-content: center;
+    gap: 20rem;
+
+}
+
+.wrapper{
+
+   
+   
+}
+
+h1{
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+    text-align: center;
+
+}
+h2{
+
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.btn{
+
+    
+
+}
+
+.unselected__classes{
+
+  height: 300px;
+  overflow-y: scroll;
+  width: 200px;
+
+}
+.unselected__classes p{
+
+    text-align: center;
+
+}
+
+
+.wrapper__selected , .wrapper__avialible{
+    box-sizing: border-box;
+    border: 1px solid #000000;
+
+}
+.selected__classes{
+
+    height: 300px;
+  overflow-y: scroll;
+  width: 200px;
+
+}
+
+.selected__classes p{
+
+    text-align: center;
+
+}
+
+.unselected__classes--class{
+    border: 1px solid #ccc;
+    height: auto;
+    user-select: text;
+}
+
+
+
+.unselected__classes--class:nth-child(even) {
+    background-color: rgb(221, 239, 221);
+  }
+
+.selected__classes--class{
+    border: 1px solid #ccc;
+    height: auto;
+    user-select: text;
+}
+
+.selected__classes--class:nth-child(even) {
+    background-color: rgb(221, 239, 221);
+  }
+
+.select{
+    margin-top: 5rem;
+    justify-content: center;
+
+    display: flex;
+    gap: 4rem;
+
+
+
+}
