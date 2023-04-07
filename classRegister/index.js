@@ -127,14 +127,14 @@ class classController {
 
       selectButtonClickListener() {
         this.view.selectButton.addEventListener('click', () => {
-
-        this.view.displayselectedClasses(this.model.selectedClasses);
-            
-
-          // Handle the click event here
-          console.log('Button clicked');
+          const totalCredits = this.model.getCredit();
+          const confirmed = confirm("You have chosen " + totalCredits +" credits for this semester. You cannot change once you submit. Do you want to confirm?");
+          if (confirmed) {
+            this.view.displayselectedClasses(this.model.selectedClasses);
+          }
         });
       }
+      
    
 
 
