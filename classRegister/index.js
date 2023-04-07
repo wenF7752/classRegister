@@ -14,23 +14,27 @@ class classModel {
     }
 
     addClass(course) {
-       
+
         this.selectedClasses.push(course);
         this.credit += course.credit;
-      }
-
-    deleteClass(course) {
-        this.selectedClasses = this.selectedClasses.filter(c => c.courseId !== course.coursId);
-        this.credit -= course.credit;
     }
+
+    deleteClass(courseId) {
+        const id = Number(courseId);
+        this.selectedClasses = this.selectedClasses.filter(c => c.courseId !== id);
+        const course = this.getCourse(Number(courseId));
+        this.credit -= course.credit;
+        
+    }
+    
 
     getCredit() {
         return this.credit;
 
     }
-    getCourse(courseId) {  
+    getCourse(courseId) {
         return this.classes.find(c => c.courseId === courseId);
-      }
+    }
 
 }
 
@@ -42,7 +46,7 @@ class classView {
         this.totalCredit = document.querySelector('.total__credit');
         this.selectButton = document.querySelector('.select__button');
         this.clickClass = document.querySelector('.unselected__classes--class');
-        
+
 
     }
 
@@ -54,8 +58,10 @@ class classView {
             <p>Course Credit: ${course.credit}</p>
     
             </div>`).join('');
+
+
     }
-    
+
     displayselectedClasses(selectedClasses) {
         this.selectedClasses.innerHTML = selectedClasses.map(
             course => `<div class="unselected__classes--class" course-name="${course.courseName}" course-type="${course.required}" course-credit="${course.credit}"  course-id="${course.courseID}" >
@@ -69,8 +75,10 @@ class classView {
     }
 
     updateTotalCredits(credit) {
-        this.totalCredit.textContent = credit; 
+        this.totalCredit.textContent = credit;
     }
+
+
 
 
 }
@@ -84,58 +92,75 @@ class classController {
     }
 
 
-    init() {
-        this.model.fetchClasses().then(() => {
+    async init() {
+        await this.model.fetchClasses().then(() => {
             this.view.displayUnselectedClasses(this.model.classes);
         });
 
-       
+
         this.unselectedClassesClickListener();
         this.selectButtonClickListener();
+        this.updateSelectButtonState();
     }
 
-    unselectedClassesClickListener() {
+    async unselectedClassesClickListener() {
         this.view.unselectedClasses.addEventListener('click', (event) => {
-          const target = event.target.closest('.unselected__classes--class');
-          if (!target) return;
-          const courseId = target.getAttribute('course-id');
-          const course = this.model.getCourse(Number(courseId));
-          
-          if (course && this.model.credit + course.credit <= 18) {
-            const isToggled = target.getAttribute('toggled') === 'true';
-            target.setAttribute('toggled', !isToggled);
-            target.style.backgroundColor = isToggled ? '' : 'aquamarine';
-      
-            if (isToggled) {
-              this.model.deleteClass(course);
-              this.view.updateTotalCredits(this.model.getCredit());
+            const target = event.target.closest('.unselected__classes--class');
+            if (!target) return;
+            const courseId = target.getAttribute('course-id');
+            const course = this.model.getCourse(Number(courseId));
+    
+            if (course && this.model.credit + course.credit <= 18) {
+                const isToggled = target.getAttribute('toggled') === 'true';
+                target.setAttribute('toggled', !isToggled);
+                target.style.backgroundColor = isToggled ? '' : 'aquamarine';
+    
+                if (isToggled) {
+                    this.model.deleteClass(courseId);
+                    this.view.updateTotalCredits(this.model.getCredit());
+                }else {
+                    this.model.addClass(course);
+                    this.view.updateTotalCredits(this.model.getCredit());
+                }
+                
+                this.updateSelectButtonState()
+            } else if (this.model.selectedClasses.includes(course)) {
+                this.model.deleteClass(courseId);
+                target.setAttribute('toggled', 'false');
+                target.style.backgroundColor = '';
+                this.view.updateTotalCredits(this.model.getCredit());
+                this.updateSelectButtonState()
             } else {
-              this.model.addClass(course);
-              this.view.updateTotalCredits(this.model.getCredit());
+                alert("You have exceeded the maximum credit limit of 18");
             }
-          } else if (this.model.selectedClasses.includes(course)) {
-            this.model.deleteClass(course);
-            target.setAttribute('toggled', 'false');
-            target.style.backgroundColor = '';
-            this.view.updateTotalCredits(this.model.getCredit());
-          } else {
-            alert("You have exceeded the maximum credit limit of 18");
-          } 
         });
-      }
-      
+    }
+    
 
-      selectButtonClickListener() {
+
+    selectButtonClickListener() {
         this.view.selectButton.addEventListener('click', () => {
-          const totalCredits = this.model.getCredit();
-          const confirmed = confirm("You have chosen " + totalCredits +" credits for this semester. You cannot change once you submit. Do you want to confirm?");
-          if (confirmed) {
-            this.view.displayselectedClasses(this.model.selectedClasses);
-          }
+            const totalCredits = this.model.getCredit();
+
+            const confirmed = confirm("You have chosen " + totalCredits + " credits for this semester. You cannot change once you submit. Do you want to confirm?");
+            if (confirmed) {
+                this.view.displayselectedClasses(this.model.selectedClasses);
+            }
         });
-      }
-      
-   
+    }
+
+    updateSelectButtonState() {
+        const requiredClasses = this.model.classes.filter(course => course.required).sort();
+        const selectedRequiredClasses = this.model.selectedClasses.filter(course => course.required).sort();
+
+        console.log(requiredClasses.length, selectedRequiredClasses.length)
+
+        if (requiredClasses.length !== selectedRequiredClasses.length) {
+            this.view.selectButton.setAttribute('disabled', 'true');
+        } else {
+            this.view.selectButton.removeAttribute('disabled');
+        }
+    }
 
 
 
