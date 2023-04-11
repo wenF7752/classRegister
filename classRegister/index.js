@@ -46,10 +46,16 @@ class classView {
         this.totalCredit = document.querySelector('.total__credit');
         this.selectButton = document.querySelector('.select__button');
         this.clickClass = document.querySelector('.unselected__classes--class');
+        this.searchValue = document.querySelector('.search__input')
 
 
     }
+    displaySearchValue(){
+        // console.log("working")
+        console.log("Logging for search input: ", this.searchValue.value)
 
+    }
+    
     displayUnselectedClasses(classes) {
         this.unselectedClasses.innerHTML = classes.map(
             course => `<div class="unselected__classes--class" toggled="false" course-name="${course.courseName}" course-type="${course.required}" course-credit="${course.credit}"  course-id="${course.courseId}" >
@@ -66,7 +72,7 @@ class classView {
         this.selectedClasses.innerHTML = selectedClasses.map(
             course => `<div class="unselected__classes--class" course-name="${course.courseName}" course-type="${course.required}" course-credit="${course.credit}"  course-id="${course.courseID}" >
             <p>${course.courseName}</p>
-            <p>Course Type ${course.required}</p>
+            <p>Course Type: ${course.required}</p>
             <p>Course Credit: ${course.credit}</p>
     
             </div>`).join('');
@@ -101,6 +107,7 @@ class classController {
         this.unselectedClassesClickListener();
         this.selectButtonClickListener();
         this.updateSelectButtonState();
+        this.searchEvent();
     }
 
     async unselectedClassesClickListener() {
@@ -162,9 +169,27 @@ class classController {
         }
     }
 
+    searchEvent(){
+
+        this.view.searchValue.addEventListener("input", () => {
+            const inputValue = this.view.searchValue.value.toLowerCase();
+            console.log(inputValue);
+            console.log(this.model.classes);
+    
+            const filteredClasses = this.model.classes.filter(course => {
+                return course.courseName.toLowerCase().includes(inputValue);
+            });
+    
+            this.view.displayUnselectedClasses(filteredClasses);
+        });
+
+
+    }
+
 
 
 }
 
 
 const app = new classController(new classModel(), new classView());
+
